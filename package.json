@@ -1,0 +1,13 @@
+{
+  "name": "enza-home",
+  "version": "1.0.0",
+  "description": "Enza Home - Premium Mobilya Kataloğu",
+  "scripts": {
+    "dev": "http-server . -p 8000 -o",
+    "start": "http-server . -p 8000"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
+
