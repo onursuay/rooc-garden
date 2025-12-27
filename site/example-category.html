@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kategori Sayfası - Dinamik Görsel Sistemi</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="site-header"></div>
+
+    <main>
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <a href="index.html" class="breadcrumb-link">Anasayfa</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">Kategori</span>
+            </nav>
+
+            <!-- Category Banner -->
+            <div class="category-banner">
+                <!-- JavaScript otomatik olarak banner görselini yükler -->
+                <div class="category-banner-bg"></div>
+                <div class="category-banner-overlay"></div>
+                <div class="category-banner-content">
+                    <span class="category-banner-badge">Kategori</span>
+                    <h1 class="category-banner-title">Kategori Başlığı</h1>
+                    <p class="category-banner-desc">Kategori açıklaması buraya gelecek.</p>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <!-- JavaScript otomatik olarak tüm ürün görsellerini yükler -->
+            <section class="products-section">
+                <div class="products-grid">
+                    <!-- Ürün kartları JavaScript tarafından dinamik olarak eklenecek -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="site-footer"></div>
+
+    <!-- Scripts -->
+    <script src="assets/js/main.js"></script>
+    <!-- Dinamik görsel yükleme sistemi -->
+    <script src="assets/js/image-loader.js"></script>
+    <script>
+        // Sayfa yüklendiğinde görselleri yükle
+        document.addEventListener('DOMContentLoaded', () => {
+            // Kategori adını buraya yazın (örnek: 'aksesuar', 'bahce-balkon-mobilyalari')
+            const category = 'aksesuar'; // Bu değeri sayfaya göre değiştirin
+            
+            const loader = new ImageLoader(category);
+            loader.loadAll({
+                loadBanner: true,
+                loadSlider: false,
+                loadProducts: true
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
