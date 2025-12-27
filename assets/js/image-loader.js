@@ -6,19 +6,39 @@
 class ImageLoader {
     constructor(category, basePath = '/assets/images') {
         this.category = category;
-        // basePath zaten doğru şekilde ayarlandıysa olduğu gibi kullan
         this.basePath = basePath;
         this.placeholderPath = `${this.basePath}/placeholder.jpg`;
+        this.productsData = null;
+    }
+
+    /**
+     * Ürün bilgilerini yükle (products.json)
+     */
+    async loadProductsData() {
+        if (this.productsData) return this.productsData;
+
+        try {
+            const baseHref = this.basePath.includes('..') ? '../' : '';
+            const response = await fetch(`${baseHref}assets/js/products.json`);
+            if (response.ok) {
+                const data = await response.json();
+                this.productsData = data[this.category] || {};
+                return this.productsData;
+            }
+        } catch (error) {
+            console.warn('Ürün bilgileri yüklenemedi, varsayılanlar kullanılacak:', error);
+        }
+        
+        return {};
     }
 
     /**
      * Dosya adından başlık üret
-     * Örnek: "koltuk-takimlari.jpg" → "Koltuk Takımları"
      */
     formatTitle(filename) {
         return filename
-            .replace(/\.(jpg|jpeg|png|webp)$/i, '') // Uzantı çıkar
-            .replace(/[-_]/g, ' ')                   // Tire/alt çizgi → boşluk
+            .replace(/\.(jpg|jpeg|png|webp)$/i, '')
+            .replace(/[-_]/g, ' ')
             .split(' ')
             .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
             .join(' ');
@@ -37,8 +57,16 @@ class ImageLoader {
     }
 
     /**
+     * Klasör var mı kontrol et (ürün klasörleri için)
+     */
+    async checkDirectoryExists(path) {
+        // Klasör varlığını kontrol etmek için main.jpg dosyasını kontrol ediyoruz
+        const mainImagePath = `${path}/main.jpg`;
+        return await this.checkImageExists(mainImagePath);
+    }
+
+    /**
      * Slider görsellerini yükle
-     * Hem düz yapıyı (slide-X.jpg) hem de alt klasör yapısını (slider/slide-X.jpg) destekler
      */
     async loadSlides(containerSelector) {
         const container = document.querySelector(containerSelector);
@@ -48,11 +76,9 @@ class ImageLoader {
         let index = 1;
 
         while (true) {
-            // Önce alt klasör yapısını dene
             let slidePath = `${this.basePath}/${this.category}/slider/slide-${index}.jpg`;
             let exists = await this.checkImageExists(slidePath);
             
-            // Yoksa düz yapıyı dene
             if (!exists) {
                 slidePath = `${this.basePath}/${this.category}/slide-${index}.jpg`;
                 exists = await this.checkImageExists(slidePath);
@@ -67,16 +93,12 @@ class ImageLoader {
             index++;
         }
 
-        // Slider container'ına ekle
         if (slides.length > 0) {
             container.innerHTML = slides.map((slide, idx) => {
                 const isActive = idx === 0 ? 'is-active' : '';
-                return `
-                    <div class="slider-dot ${isActive}" data-slide="${idx}"></div>
-                `;
+                return `<div class="slider-dot ${isActive}" data-slide="${idx}"></div>`;
             }).join('');
 
-            // Slider track'e slide'ları ekle
             const sliderTrack = document.querySelector('.slider-track');
             if (sliderTrack) {
                 sliderTrack.innerHTML = slides.map((slide, idx) => {
@@ -95,40 +117,41 @@ class ImageLoader {
     }
 
     /**
-     * Ürün görsellerini yükle
-     * Hem prod-X.jpg formatını hem de anlamlı dosya adlarını destekler
+     * Ürün görsellerini yükle (yeni sistem: urun-001/, urun-002/ klasörleri)
      */
     async loadProducts(containerSelector, productTemplate = null) {
         const container = document.querySelector(containerSelector);
         if (!container) return;
 
+        // Ürün bilgilerini yükle
+        await this.loadProductsData();
+
         const products = [];
         let index = 1;
 
-        // Önce prod-X.jpg formatını dene (geriye dönük uyumluluk)
-        // Hem düz yapıyı (prod-X.jpg) hem de alt klasör yapısını (products/prod-X.jpg) destekle
+        // urun-001/, urun-002/ formatında klasörleri kontrol et
         while (true) {
-            // Önce alt klasör yapısını dene
-            let productPath = `${this.basePath}/${this.category}/products/prod-${index}.jpg`;
-            let exists = await this.checkImageExists(productPath);
+            const productFolder = `urun-${String(index).padStart(3, '0')}`;
+            const productPath = `${this.basePath}/${this.category}/products/${productFolder}`;
+            const mainImagePath = `${productPath}/main.jpg`;
             
-            // Yoksa düz yapıyı dene
-            if (!exists) {
-                productPath = `${this.basePath}/${this.category}/prod-${index}.jpg`;
-                exists = await this.checkImageExists(productPath);
-            }
-            
+            const exists = await this.checkImageExists(mainImagePath);
             if (!exists) break;
 
-            // Dosya adından başlık üret
-            const filename = `prod-${index}.jpg`;
-            const title = this.formatTitle(filename);
+            // Ürün bilgilerini al
+            const productInfo = this.productsData[productFolder] || {};
+            const productName = productInfo.name || `Ürün ${index}`;
+            const productDesc = productInfo.description || 'Ürün açıklaması buraya gelecek.';
+            const productCategory = productInfo.category || this.category;
 
             products.push({
-                src: productPath,
-                index: index,
-                filename: filename,
-                title: title
+                id: productFolder,
+                folder: productFolder,
+                src: mainImagePath,
+                name: productName,
+                description: productDesc,
+                category: productCategory,
+                index: index
             });
             index++;
         }
@@ -145,23 +168,19 @@ class ImageLoader {
     }
 
     /**
-     * Varsayılan ürün kartı template'i
-     * Dosya adından otomatik başlık üretir
+     * Ürün kartı template'i
      */
     createProductCard(product, index) {
         const badges = ['Yeni', 'Popüler'];
         const badge = index < 2 ? `<span class="product-badge ${index === 0 ? 'product-badge--new' : ''}">${badges[index] || ''}</span>` : '';
         
-        // Dosya adından başlık üret (eğer title yoksa formatTitle kullan)
-        const title = product.title || this.formatTitle(product.filename || `prod-${product.index}.jpg`);
-        const productName = title || `Ürün ${index + 1}`;
-        
         // Relative path için href ayarla
         const baseHref = this.basePath.includes('..') ? '../' : '';
+        const productUrl = `${baseHref}urunler/${product.id}.html`;
         
         return `
             <div class="product-card">
-                <a href="${baseHref}urunler/ornek-urun-${String(index + 1).padStart(2, '0')}.html" class="product-card-image">
+                <a href="${productUrl}" class="product-card-image">
                     ${badge}
                     <img 
                         src="${product.src}" 
@@ -169,14 +188,14 @@ class ImageLoader {
                         sizes="(max-width: 768px) 100vw, 600px"
                         loading="lazy" 
                         onerror="this.src='${this.placeholderPath}'" 
-                        alt="${productName}"
+                        alt="${product.name}"
                     />
                 </a>
                 <div class="product-card-info">
-                    <span class="product-category">${this.category}</span>
-                    <a href="${baseHref}urunler/ornek-urun-${String(index + 1).padStart(2, '0')}.html" class="product-title">${productName}</a>
-                    <p class="product-desc">Ürün açıklaması buraya gelecek.</p>
-                    <a href="#" class="btn-product-whatsapp" data-product-name="${productName}">
+                    <span class="product-category">${product.category}</span>
+                    <a href="${productUrl}" class="product-title">${product.name}</a>
+                    <p class="product-desc">${product.description}</p>
+                    <a href="#" class="btn-product-whatsapp" data-product-name="${product.name}">
                         <span class="material-symbols-outlined">chat</span>
                         WhatsApp İle Sor
                     </a>
@@ -187,17 +206,14 @@ class ImageLoader {
 
     /**
      * Banner görselini yükle
-     * Hem düz yapıyı (banner.jpg) hem de alt klasör yapısını (banner/banner.jpg) destekler
      */
     async loadBanner(containerSelector) {
         const container = document.querySelector(containerSelector);
         if (!container) return;
 
-        // Önce alt klasör yapısını dene
         let bannerPath = `${this.basePath}/${this.category}/banner/banner.jpg`;
         let exists = await this.checkImageExists(bannerPath);
         
-        // Yoksa düz yapıyı dene
         if (!exists) {
             bannerPath = `${this.basePath}/${this.category}/banner.jpg`;
             exists = await this.checkImageExists(bannerPath);
@@ -240,7 +256,6 @@ class ImageLoader {
 
 // Kategori sayfaları için otomatik yükleme
 document.addEventListener('DOMContentLoaded', () => {
-    // Sayfa yolundan kategoriyi belirle
     const path = window.location.pathname;
     let category = null;
 
@@ -253,13 +268,11 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (path.includes('/salincaklar') || path.includes('salincaklar/index.html')) category = 'salincaklar';
 
     if (category) {
-        // Relative path kullan (kategori sayfaları genelde bir alt klasörde)
         const loader = new ImageLoader(category, '../assets/images');
         loader.loadAll({
             loadBanner: true,
             loadSlider: false,
-            loadProducts: false // Ürünler HTML'de tanımlı olduğu için false - true yaparak dinamik yükleme aktif edilebilir
+            loadProducts: true // Artık dinamik yükleme aktif
         });
     }
 });
-

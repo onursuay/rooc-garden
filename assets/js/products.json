@@ -1,0 +1,132 @@
+{
+  "aksesuar": {
+    "urun-001": {
+      "name": "Dekoratif Vazo",
+      "description": "Seramik, el yapımı.",
+      "category": "Vazo"
+    },
+    "urun-002": {
+      "name": "Mumluk Set",
+      "description": "3'lü set, cam ve metal.",
+      "category": "Mumluk"
+    },
+    "urun-003": {
+      "name": "Terra Sehpa",
+      "description": "Masif ireko ağacı, doğal cila.",
+      "category": "Sehpa"
+    },
+    "urun-004": {
+      "name": "Pietra Sehpa",
+      "description": "Geometrik tasarım, metal ayaklar.",
+      "category": "Sehpa"
+    }
+  },
+  "salincaklar": {
+    "urun-001": {
+      "name": "Doris Salıncak",
+      "description": "Tek kişilik, konforlu minder dahil.",
+      "category": "Salıncaklar"
+    },
+    "urun-002": {
+      "name": "Luna Bahçe Salıncağı",
+      "description": "3 kişilik, geniş oturma alanı.",
+      "category": "Salıncaklar"
+    },
+    "urun-003": {
+      "name": "Asma Salıncak",
+      "description": "Rattan örgü, tavana monte.",
+      "category": "Salıncaklar"
+    }
+  },
+  "bahce-balkon-mobilyalari": {
+    "urun-001": {
+      "name": "Siorno Köşe Takımı",
+      "description": "Suya dayanıklı özel kumaş, masif ahşap ayaklar.",
+      "category": "İreko Serisi"
+    },
+    "urun-002": {
+      "name": "Pierra Oturma Grubu",
+      "description": "Alüminyum iskelet, modüler parçalar.",
+      "category": "Alüminyum Serisi"
+    },
+    "urun-003": {
+      "name": "Vienna Köşe Grubu",
+      "description": "Premium kumaş, konforlu tasarım.",
+      "category": "Premium Serisi"
+    },
+    "urun-004": {
+      "name": "Angelina Bahçe Seti",
+      "description": "Rattan örgü, suya dayanıklı.",
+      "category": "Rattan Serisi"
+    }
+  },
+  "ev-tekstili": {
+    "urun-001": {
+      "name": "Keten Yastık",
+      "description": "Doğal keten, 45x45cm.",
+      "category": "Yastık"
+    },
+    "urun-002": {
+      "name": "Organze Perde",
+      "description": "Yarı saydam, modern görünüm.",
+      "category": "Perde"
+    },
+    "urun-003": {
+      "name": "Arte Yün Halı",
+      "description": "El dokuma, 200x300cm.",
+      "category": "Halı"
+    }
+  },
+  "ic-mekan-kapali-balkon-mobilyalari": {
+    "urun-001": {
+      "name": "Vienna Koltuk Takımı",
+      "description": "Premium kumaş, konforlu tasarım.",
+      "category": "Oturma Grubu"
+    },
+    "urun-002": {
+      "name": "Milan Köşe Grubu",
+      "description": "Deri kaplama, şık tasarım.",
+      "category": "Premium Serisi"
+    },
+    "urun-003": {
+      "name": "Vienna Orta Sehpa",
+      "description": "Mermer görünümlü üst, metal ayaklar.",
+      "category": "Aksesuar"
+    }
+  },
+  "perde": {
+    "urun-001": {
+      "name": "Jaluzi Perde",
+      "description": "Ayarlanabilir ışık kontrolü.",
+      "category": "Jaluzi"
+    },
+    "urun-002": {
+      "name": "Zebra Perde",
+      "description": "Çift katmanlı, şık tasarım.",
+      "category": "Zebra"
+    },
+    "urun-003": {
+      "name": "Stor Perde",
+      "description": "Modern görünüm, kolay kullanım.",
+      "category": "Stor Perde"
+    }
+  },
+  "pergole": {
+    "urun-001": {
+      "name": "Alüminyum Pergola",
+      "description": "Suya dayanıklı, uzun ömürlü.",
+      "category": "Alüminyum"
+    },
+    "urun-002": {
+      "name": "Ahşap Pergola",
+      "description": "Doğal görünüm, dayanıklı malzeme.",
+      "category": "Ahşap"
+    },
+    "urun-003": {
+      "name": "Solar Şemsiye",
+      "description": "LED aydınlatmalı, USB şarj.",
+      "category": "Şemsiye"
+    }
+  }
+}
+
